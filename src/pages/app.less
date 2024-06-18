@@ -1,4 +1,14 @@
-@a: red;
+@color: red;
+
+@font-face {
+  font-family: custom;
+  src: url("@/assets/fonts/优设标题黑.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .test {
-  color: @a;
+  font-family: custom;
+  font-size: 50px;
+  color: @color;
 }
