@@ -1,14 +1,13 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
-const { ProgressPlugin } = require("webpack");
 const WebpackBar = require("webpackbar");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: path.resolve(__dirname, "./src/index.tsx"),
   output: {
     path: path.resolve(__dirname, "./dist"), // 打包后的代码放在dist目录下
-    filename: "[name].[hash:8].js", // 打包的文件名
+    filename: "[name].[contenthash:8].js", // 打包的文件名
   },
   resolve: {
     alias: {
@@ -18,6 +17,9 @@ module.exports = {
     extensions: [".mjs", ".js", ".json", ".jsx", ".ts", ".tsx"], // 如果项目中只有 tsx 或 ts 可以将其写在最前面
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: "assets/css/[contenthash:8].css", // 更新为contenthash以获取更好的缓存策略
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "./index.html"), // 使用自定义模板
     }),
@@ -70,26 +72,38 @@ module.exports = {
           },
         },
         generator: {
-          filename: "assets/fonts/[name].[hash:8][ext]",
+          filename: "assets/fonts/[name].[contenthash:8][ext]",
         },
       },
       {
         test: /\.(png|jpe?g|gif|svg|webp)$/i,
-        use: [
-          {
-            loader: "url-loader",
-            options: {
-              limit: 2000,
-              // //限制打包图片的大小：
-              // //如果大于或等于2000Byte，则按照相应的文件名和路径打包图片；如果小于2000Byte，则将图片转成base64格式的字符串。
-              // name: 'img/[name].[hash:8].[ext]',
-              // //img:图片打包的文件夹；
-              // //[name].[ext]：设定图片按照本来的文件名和扩展名打包，不用进行额外编码
-              // //[hash:8]：一个项目中如果两个文件夹中的图片重名，打包图片就会被覆盖，加上hash值的前八位作为图片名，可以避免重名。
-            },
+        type: "asset",
+        parser: {
+          dataUrlCondition: {
+            maxSize: 25 * 1024, // 25kb
           },
-        ],
+        },
+        generator: {
+          filename: "assets/images/[name].[contenthash:8][ext]",
+        },
       },
+      // {
+      //   test: /\.(png|jpe?g|gif|svg|webp)$/i,
+      //   use: [
+      //     {
+      //       loader: "url-loader",
+      //       options: {
+      //         limit: 2000,
+      //         // //限制打包图片的大小：
+      //         // //如果大于或等于2000Byte，则按照相应的文件名和路径打包图片；如果小于2000Byte，则将图片转成base64格式的字符串。
+      //         // name: 'img/[name].[hash:8].[ext]',
+      //         // //img:图片打包的文件夹；
+      //         // //[name].[ext]：设定图片按照本来的文件名和扩展名打包，不用进行额外编码
+      //         // //[hash:8]：一个项目中如果两个文件夹中的图片重名，打包图片就会被覆盖，加上hash值的前八位作为图片名，可以避免重名。
+      //       },
+      //     },
+      //   ],
+      // },
     ],
   },
 };

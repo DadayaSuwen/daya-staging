@@ -1,8 +1,9 @@
 const { merge } = require("webpack-merge");
 const base = require("../webpack.config.js");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = merge(base, {
   mode: "production", // 生产模式
@@ -11,7 +12,7 @@ module.exports = merge(base, {
       {
         test: /\.less$/,
         use: [
-          "style-loader",
+          MiniCssExtractPlugin.loader,
           "css-loader",
           {
             loader: "postcss-loader",
